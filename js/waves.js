@@ -177,6 +177,54 @@
             }, delay);
         },
 
+        hideNoDelay: function (e) {
+            TouchHandler.touchup(e);
+
+            var el = this;
+            var width = el.clientWidth * 1.4;
+
+            // Get first ripple
+            var ripple = null;
+            var ripples = el.getElementsByClassName('waves-ripple');
+            if (ripples.length > 0) {
+                ripple = ripples[ripples.length - 1];
+            } else {
+                return false;
+            }
+
+            var relativeX = ripple.getAttribute('data-x');
+            var relativeY = ripple.getAttribute('data-y');
+            var scale = ripple.getAttribute('data-scale');
+
+            // Fade out ripple after delay
+            var style = {
+            'top': relativeY + 'px',
+            'left': relativeX + 'px',
+            'opacity': '0',
+
+            // Duration
+            '-webkit-transition-duration': Effect.duration + 'ms',
+            '-moz-transition-duration': Effect.duration + 'ms',
+            '-o-transition-duration': Effect.duration + 'ms',
+            'transition-duration': Effect.duration + 'ms',
+            '-webkit-transform': scale,
+            '-moz-transform': scale,
+            '-ms-transform': scale,
+            '-o-transform': scale,
+            'transform': scale
+            };
+
+            ripple.setAttribute('style', convertStyle(style));
+
+            setTimeout(function () {
+                try {
+                    el.removeChild(ripple);
+                } catch (e) {
+                    return false;
+                }
+            }, Effect.duration);
+        },
+
         // Little hack to make <input> can perform waves effect
         wrapInput: function(elements) {
             for (var a = 0; a < elements.length; a++) {
@@ -280,6 +328,7 @@
             if ('ontouchstart' in window) {
                 element.addEventListener('touchend', Effect.hide, false);
                 element.addEventListener('touchcancel', Effect.hide, false);
+                element.addEventListener('touchmove', Effect.hideNoDelay, false);
             }
 
             element.addEventListener('mouseup', Effect.hide, false);
